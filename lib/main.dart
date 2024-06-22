@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'login.dart';
+import 'produtos.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,7 +16,54 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: UserRegistrationScreen(),
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    UserRegistrationScreen(),
+    ProductsRegistrationScreen(),
+    LoginUserScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Cadastro',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Produtos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.login),
+            label: 'Login',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.cyanAccent,
+        onTap: _onItemTapped,
+      ),
     );
   }
 }
@@ -32,8 +81,35 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   List<User> userList = [];
 
   @override
+  void initState() {
+    super.initState();
+    fetchUsers();
+  }
+
+  Future<void> fetchUsers() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://serverest.dev/usuarios'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> usersJson = json.decode(response.body)['usuarios'];
+        setState(() {
+          userList = usersJson.map((json) => User.fromJson(json)).toList();
+        });
+      } else {
+        print('Failed to load users: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching users: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Cadastro de Usuários'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -83,29 +159,41 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
           'nome': user.name,
           'email': user.email,
           'password': user.password,
-          'administrador': 'false'
+          'administrador': 'false',
         },
       );
 
       if (response.statusCode == 201) {
-        setState(() {
-          userList.add(user);
-        });
-
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Usuário cadastrado com sucesso!'),
+            backgroundColor: Colors.blue,
+          ),
+        );
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) => ListScreen(userList: userList)),
+          MaterialPageRoute(builder: (context) => LoginUserScreen()),
         );
       } else {
-        print('Failed to register user: ${response.body}');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Falha ao cadastrar usuário: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
 
       nameController.clear();
       emailController.clear();
       passwordController.clear();
     } catch (e) {
-      print('Usuario não foi cadastrado: $e');
+      print('Erro ao cadastrar usuário: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao cadastrar usuário'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }
@@ -121,7 +209,7 @@ class User {
     return User(
       name: json['nome'],
       email: json['email'],
-      password: json['password'],
+      password: '',
     );
   }
 }
@@ -143,9 +231,71 @@ class ListScreen extends StatelessWidget {
           return ListTile(
             title: Text(userList[index].name),
             subtitle: Text(userList[index].email),
+            trailing: IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                editUser(context, userList[index]);
+              },
+            ),
           );
         },
       ),
     );
   }
+
+  void editUser(BuildContext context, User user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditUserScreen(user: user)),
+    );
+  }
+}
+
+class EditUserScreen extends StatelessWidget {
+  final User user;
+
+  const EditUserScreen({Key? key, required this.user}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Editar Usuario'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextField(
+              controller: TextEditingController(text: user.name),
+              decoration: InputDecoration(
+                labelText: 'Nome Completo',
+              ),
+            ),
+            TextField(
+              controller: TextEditingController(text: user.email),
+              decoration: InputDecoration(
+                labelText: 'Email',
+              ),
+            ),
+            TextField(
+              controller: TextEditingController(text: user.password),
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: 'Senha',
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                updateUser(context);
+              },
+              child: Text('Enviar'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void updateUser(BuildContext context) {}
 }
