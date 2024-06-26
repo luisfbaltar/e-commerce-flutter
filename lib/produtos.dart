@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'login.dart' as login;
+import 'globals.dart' as globals;
 
 void main() {
   runApp(MyApp());
@@ -14,7 +16,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: ProductsRegistrationScreen(),
+      home: ListScreenProducts(
+        productsList: [],
+      ),
     );
   }
 }
@@ -122,6 +126,7 @@ class _ProductsRegistrationScreenState
         Uri.parse('https://serverest.dev/produtos'),
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': '${globals.jwtToken}'
         },
         body: jsonEncode({
           'nome': products.productname,
@@ -150,6 +155,7 @@ class _ProductsRegistrationScreenState
                   ListScreenProducts(productsList: productsList)),
         );
       } else {
+        print('Produto não foi cadastrado: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Falha ao cadastrar produto '),

@@ -31,7 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     UserRegistrationScreen(),
-    ProductsRegistrationScreen(),
+    ListScreenProducts(
+      productsList: [],
+    ),
     LoginUserScreen(),
   ];
 
@@ -159,7 +161,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
           'nome': user.name,
           'email': user.email,
           'password': user.password,
-          'administrador': 'false',
+          'administrador': 'true',
         },
       );
 

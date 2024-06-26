@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'main.dart';
+import 'globals.dart' as globals;
 
 void main() {
   runApp(MyApp());
@@ -85,7 +86,11 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
       );
 
       if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        globals.jwtToken = data['authorization'];
         final responseData = json.decode(response.body);
+
+        print(globals.jwtToken);
 
         if (responseData['message'] == 'Login realizado com sucesso') {
           ScaffoldMessenger.of(context).showSnackBar(
