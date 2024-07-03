@@ -31,9 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     UserRegistrationScreen(),
-    ListScreenProducts(
-      productsList: [],
-    ),
+    ListScreenProducts(),
     LoginUserScreen(),
   ];
 
@@ -99,10 +97,10 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
           userList = usersJson.map((json) => User.fromJson(json)).toList();
         });
       } else {
-        print('Failed to load users: ${response.body}');
+        print(': ${response.body}');
       }
     } catch (e) {
-      print('Error fetching users: $e');
+      print('Não foi possivel fazer o cadastro: $e');
     }
   }
 
@@ -113,35 +111,38 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
         title: Text('Cadastro de Usuários'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Nome Completo',
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nome Completo',
+                ),
               ),
-            ),
-            TextField(
-              controller: emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
+              TextField(
+                controller: emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
               ),
-            ),
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Senha',
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: 'Senha',
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                registerUser(context);
-              },
-              child: Text('Enviar'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  registerUser(context);
+                },
+                child: Text('Enviar'),
+              ),
+            ],
+          ),
         ),
       ),
     );

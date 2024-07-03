@@ -16,9 +16,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: ListScreenProducts(
-        productsList: [],
-      ),
+      home: ListScreenProducts(),
     );
   }
 }
@@ -70,40 +68,43 @@ class _ProductsRegistrationScreenState
         title: Text('Cadastro de Produtos'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: productnameController,
-              decoration: InputDecoration(
-                labelText: 'Nome do Produto',
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextField(
+                controller: productnameController,
+                decoration: InputDecoration(
+                  labelText: 'Nome do Produto',
+                ),
               ),
-            ),
-            TextField(
-              controller: priceController,
-              decoration: InputDecoration(
-                labelText: 'Preço Do Produto',
+              TextField(
+                controller: priceController,
+                decoration: InputDecoration(
+                  labelText: 'Preço Do Produto',
+                ),
               ),
-            ),
-            TextField(
-              controller: descriptionController,
-              decoration: InputDecoration(
-                labelText: 'Descrição Do Produto',
+              TextField(
+                controller: descriptionController,
+                decoration: InputDecoration(
+                  labelText: 'Descrição Do Produto',
+                ),
               ),
-            ),
-            TextField(
-              controller: quantityController,
-              decoration: InputDecoration(
-                labelText: 'Quantidade',
+              TextField(
+                controller: quantityController,
+                decoration: InputDecoration(
+                  labelText: 'Quantidade',
+                ),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                registerProducts(context);
-              },
-              child: Text('Enviar'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  registerProducts(context);
+                },
+                child: Text('Enviar'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -150,9 +151,7 @@ class _ProductsRegistrationScreenState
 
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (context) =>
-                  ListScreenProducts(productsList: productsList)),
+          MaterialPageRoute(builder: (context) => ListScreenProducts()),
         );
       } else {
         print('Produto não foi cadastrado: ${response.body}');
@@ -197,17 +196,44 @@ class Products {
   }
 }
 
-class ListScreenProducts extends StatelessWidget {
-  final List<Products> productsList;
+class ListScreenProducts extends StatefulWidget {
+  @override
+  _ListScreenProductsState createState() => _ListScreenProductsState();
+}
 
-  const ListScreenProducts({Key? key, required this.productsList})
-      : super(key: key);
+class _ListScreenProductsState extends State<ListScreenProducts> {
+  List<Products> productsList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts();
+  }
+
+  Future<void> fetchProducts() async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://serverest.dev/produtos'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> productsJson = json.decode(response.body)['produtos'];
+        setState(() {
+          productsList =
+              productsJson.map((json) => Products.fromJson(json)).toList();
+        });
+      } else {
+        print('Failed to load products: ${response.body}');
+      }
+    } catch (e) {
+      print('Error fetching products: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista De Produtos'),
+        title: Text('Lista De Produtoss'),
       ),
       body: ListView.builder(
         itemCount: productsList.length,
@@ -224,6 +250,17 @@ class ListScreenProducts extends StatelessWidget {
             ),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductsRegistrationScreen(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
