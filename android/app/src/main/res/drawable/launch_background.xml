@@ -10,3 +10,9 @@
             android:src="@mipmap/launch_image" />
     </item> -->
 </layer-list>
+
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/launch_background"/>
+    <!-- You can add a logo or other drawables here -->
+</layer-list>

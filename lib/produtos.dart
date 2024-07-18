@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login.dart' as login;
+import 'cadastro.dart' as login;
 import 'globals.dart' as globals;
 
 void main() {
@@ -117,6 +117,7 @@ class _ProductsRegistrationScreenState
     String quantity = quantityController.text;
 
     Products products = Products(
+        id: '',
         productname: productname,
         price: price,
         description: description,
@@ -138,6 +139,9 @@ class _ProductsRegistrationScreenState
       );
 
       if (response.statusCode == 201) {
+        final responseData = json.decode(response.body);
+        products.id = responseData['_id'];
+
         setState(() {
           productsList.add(products);
         });
@@ -174,12 +178,14 @@ class _ProductsRegistrationScreenState
 }
 
 class Products {
+  String id;
   String productname;
   String price;
   String description;
   String quantity;
 
   Products({
+    required this.id,
     required this.productname,
     required this.price,
     required this.description,
@@ -188,6 +194,7 @@ class Products {
 
   factory Products.fromJson(Map<String, dynamic> json) {
     return Products(
+      id: json['_id'],
       productname: json['nome'],
       price: json['preco'].toString(),
       description: json['descricao'],
@@ -203,6 +210,7 @@ class ListScreenProducts extends StatefulWidget {
 
 class _ListScreenProductsState extends State<ListScreenProducts> {
   List<Products> productsList = [];
+  Cart cart = Cart();
 
   @override
   void initState() {
@@ -229,11 +237,52 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
     }
   }
 
+  Future<void> deleteProduct(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('https://serverest.dev/produtos/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': '${globals.jwtToken}'
+        },
+      );
+
+      if (response.statusCode == 200) {
+        setState(() {
+          productsList.removeWhere((product) => product.id == id);
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Produto deletado!'),
+            backgroundColor: Colors.blue,
+          ),
+        );
+      } else {
+        print('Failed to delete product: ${response.body}');
+      }
+    } catch (e) {
+      print('Error deleting product: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista De Produtoss'),
+        title: Text('Lista De Produtos'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartScreen(cart: cart),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: ListView.builder(
         itemCount: productsList.length,
@@ -242,11 +291,31 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
             title: Text(productsList[index].productname),
             subtitle: Text(
                 'Preço: ${productsList[index].price} - Quantidade: ${productsList[index].quantity}'),
-            trailing: IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                editProducts(context, productsList[index]);
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.add_shopping_cart),
+                  onPressed: () {
+                    setState(() {
+                      cart.addToCart(productsList[index]);
+                    });
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Produto adicionado ao carrinho!'),
+                        backgroundColor: Colors.blue,
+                      ),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    deleteProduct(productsList[index].id);
+                  },
+                ),
+              ],
             ),
           );
         },
@@ -327,4 +396,111 @@ class EditProductsScreen extends StatelessWidget {
   }
 
   void updateProducts(BuildContext context) {}
+}
+
+class Cart {
+  List<Products> items = [];
+
+  void addToCart(Products product) {
+    items.add(product);
+  }
+
+  void removeFromCart(Products product) {
+    items.remove(product);
+  }
+
+  void clearCart() {
+    items.clear();
+  }
+
+  List<Products> getCartItems() {
+    return items;
+  }
+}
+
+class CartScreen extends StatefulWidget {
+  final Cart cart;
+
+  CartScreen({required this.cart});
+
+  @override
+  _CartScreenState createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Carrinho de compras'),
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.cart.getCartItems().length,
+              itemBuilder: (BuildContext context, int index) {
+                Products product = widget.cart.getCartItems()[index];
+                return ListTile(
+                  title: Text(product.productname),
+                  subtitle: Text(
+                      'Preço: ${product.price} - Quantidade: ${product.quantity}'),
+                  trailing: IconButton(
+                    icon: Icon(Icons.remove_shopping_cart),
+                    onPressed: () {
+                      setState(() {
+                        widget.cart.removeFromCart(product);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Produto removido'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Compra Concluida!'),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListScreenProducts(),
+                ),
+              );
+            },
+            child: Text('Concluir Compra'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              widget.cart.clearCart();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Compra cancelada com sucesso!'),
+                  backgroundColor: Colors.blue,
+                ),
+              );
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListScreenProducts(),
+                ),
+              );
+            },
+            child: Text('Cancelar Compra'),
+          ),
+        ],
+      ),
+    );
+  }
 }

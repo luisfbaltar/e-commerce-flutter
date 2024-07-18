@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'login.dart';
+import 'main.dart';
 import 'produtos.dart';
+import 'globals.dart' as globals;
+import 'cadastro.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,116 +14,36 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cadastro do Usuario',
+      title: 'Login de Usuário',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: HomeScreen(),
+      home: LoginUserScreen(),
     );
   }
 }
 
-class HomeScreen extends StatefulWidget {
+class LoginUserScreen extends StatefulWidget {
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _LoginUserScreenState createState() => _LoginUserScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _pages = [
-    UserRegistrationScreen(),
-    ListScreenProducts(),
-    LoginUserScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Cadastro',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Produtos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.login),
-            label: 'Login',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.cyanAccent,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-
-class UserRegistrationScreen extends StatefulWidget {
-  @override
-  _UserRegistrationScreenState createState() => _UserRegistrationScreenState();
-}
-
-class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
-  TextEditingController nameController = TextEditingController();
+class _LoginUserScreenState extends State<LoginUserScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  List<User> userList = [];
-
-  @override
-  void initState() {
-    super.initState();
-    fetchUsers();
-  }
-
-  Future<void> fetchUsers() async {
-    try {
-      final response =
-          await http.get(Uri.parse('https://serverest.dev/usuarios'));
-
-      if (response.statusCode == 200) {
-        List<dynamic> usersJson = json.decode(response.body)['usuarios'];
-        setState(() {
-          userList = usersJson.map((json) => User.fromJson(json)).toList();
-        });
-      } else {
-        print(': ${response.body}');
-      }
-    } catch (e) {
-      print('Não foi possivel fazer o cadastro: $e');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro de Usuários'),
+        title: Text('Login de Usuário'),
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Nome Completo',
-                ),
-              ),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
@@ -130,16 +52,29 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               ),
               TextField(
                 controller: passwordController,
-                obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Senha',
                 ),
+                obscureText: true,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  loginUser(context);
+                },
+                child: Text('Enviar'),
               ),
               ElevatedButton(
                 onPressed: () {
-                  registerUser(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserRegistrationScreen(),
+                    ),
+                  );
+                  loginUser(context);
                 },
-                child: Text('Enviar'),
+                child: Text('Não tem cadastro? Faça o seu aqui!'),
               ),
             ],
           ),
@@ -148,52 +83,96 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
     );
   }
 
-  void registerUser(BuildContext context) async {
-    String name = nameController.text;
+  void loginUser(BuildContext context) async {
     String email = emailController.text;
     String password = passwordController.text;
 
-    User user = User(name: name, email: email, password: password);
-
     try {
       final response = await http.post(
-        Uri.parse('https://serverest.dev/usuarios'),
-        body: {
-          'nome': user.name,
-          'email': user.email,
-          'password': user.password,
-          'administrador': 'true',
+        Uri.parse('https://serverest.dev/login'),
+        headers: {
+          'Content-Type': 'application/json',
         },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+        }),
       );
 
-      if (response.statusCode == 201) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Usuário cadastrado com sucesso!'),
-            backgroundColor: Colors.blue,
-          ),
-        );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LoginUserScreen()),
-        );
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        globals.jwtToken = data['authorization'];
+        final responseData = json.decode(response.body);
+
+        print(globals.jwtToken);
+
+        if (responseData['message'] == 'Login realizado com sucesso') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Login realizado com sucesso!'),
+              backgroundColor: Colors.blue,
+            ),
+          );
+          fetchUsers(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content:
+                  Text('Falha ao efetuar login: ${responseData['message']}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Falha ao cadastrar usuário: ${response.body}'),
-            backgroundColor: Colors.red,
+            content: Text('Erro ao efetuar login'),
+            backgroundColor: Colors.blue,
           ),
         );
       }
 
-      nameController.clear();
       emailController.clear();
       passwordController.clear();
     } catch (e) {
-      print('Erro ao cadastrar usuário: $e');
+      print('Erro ao efetuar login: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Erro ao cadastrar usuário'),
+          content: Text('Erro ao efetuar login'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void fetchUsers(BuildContext context) async {
+    try {
+      final response =
+          await http.get(Uri.parse('https://serverest.dev/usuarios'));
+
+      if (response.statusCode == 200) {
+        List<dynamic> usersJson = json.decode(response.body)['usuarios'];
+        List<User> userList =
+            usersJson.map((json) => User.fromJson(json)).toList();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListScreenProducts()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Falha ao carregar lista de usuários: ${response.body}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      print('Erro ao buscar lista de usuários: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao buscar lista de usuários'),
           backgroundColor: Colors.red,
         ),
       );
@@ -204,15 +183,13 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
 class User {
   String name;
   String email;
-  String password;
 
-  User({required this.name, required this.email, required this.password});
+  User({required this.name, required this.email});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       name: json['nome'],
       email: json['email'],
-      password: '',
     );
   }
 }
@@ -226,7 +203,7 @@ class ListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista De Usuario'),
+        title: Text('Lista De Usuários'),
       ),
       body: ListView.builder(
         itemCount: userList.length,
@@ -234,71 +211,9 @@ class ListScreen extends StatelessWidget {
           return ListTile(
             title: Text(userList[index].name),
             subtitle: Text(userList[index].email),
-            trailing: IconButton(
-              icon: Icon(Icons.edit),
-              onPressed: () {
-                editUser(context, userList[index]);
-              },
-            ),
           );
         },
       ),
     );
   }
-
-  void editUser(BuildContext context, User user) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => EditUserScreen(user: user)),
-    );
-  }
-}
-
-class EditUserScreen extends StatelessWidget {
-  final User user;
-
-  const EditUserScreen({Key? key, required this.user}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Editar Usuario'),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: TextEditingController(text: user.name),
-              decoration: InputDecoration(
-                labelText: 'Nome Completo',
-              ),
-            ),
-            TextField(
-              controller: TextEditingController(text: user.email),
-              decoration: InputDecoration(
-                labelText: 'Email',
-              ),
-            ),
-            TextField(
-              controller: TextEditingController(text: user.password),
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: 'Senha',
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                updateUser(context);
-              },
-              child: Text('Enviar'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void updateUser(BuildContext context) {}
 }
