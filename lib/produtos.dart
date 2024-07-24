@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'cadastro.dart' as login;
 import 'globals.dart' as globals;
 
 void main() {
@@ -116,12 +115,37 @@ class _ProductsRegistrationScreenState
     String description = descriptionController.text;
     String quantity = quantityController.text;
 
+    if (productname.isEmpty ||
+        price.isEmpty ||
+        description.isEmpty ||
+        quantity.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Campos Vazios'),
+            content: Text('Todos os campos são obrigatórios'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+
     Products products = Products(
-        id: '',
-        productname: productname,
-        price: price,
-        description: description,
-        quantity: quantity);
+      id: '',
+      productname: productname,
+      price: price,
+      description: description,
+      quantity: quantity,
+    );
 
     try {
       final response = await http.post(
@@ -161,7 +185,7 @@ class _ProductsRegistrationScreenState
         print('Produto não foi cadastrado: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Falha ao cadastrar produto '),
+            content: Text('Falha ao cadastrar produto'),
             backgroundColor: Colors.red,
           ),
         );
@@ -173,6 +197,12 @@ class _ProductsRegistrationScreenState
       quantityController.clear();
     } catch (e) {
       print('Produto não foi cadastrado: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Erro ao cadastrar produto'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 }

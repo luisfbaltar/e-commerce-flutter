@@ -113,6 +113,27 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
     String email = emailController.text;
     String password = passwordController.text;
 
+    if (name.isEmpty || email.isEmpty || password.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Campos Vazios'),
+            content: Text('Todos os campos são obrigatórios'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return; // Não prossegue com a requisição
+    }
+
     User user = User(name: name, email: email, password: password);
 
     try {

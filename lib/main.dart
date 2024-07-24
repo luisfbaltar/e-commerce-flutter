@@ -72,7 +72,6 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
                       builder: (context) => UserRegistrationScreen(),
                     ),
                   );
-                  loginUser(context);
                 },
                 child: Text('Não tem cadastro? Faça o seu aqui!'),
               ),
@@ -86,6 +85,27 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
   void loginUser(BuildContext context) async {
     String email = emailController.text;
     String password = passwordController.text;
+
+    if (email.isEmpty || password.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Campos Vazios'),
+            content: Text('O email e a senha são obrigatórios'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+      return; // Não prossegue com a requisição
+    }
 
     try {
       final response = await http.post(
