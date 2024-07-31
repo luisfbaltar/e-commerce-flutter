@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
 }
 
 final List<Widget> _pages = [
+  ListScreenProducts(),
   LoginUserScreen(),
   UserRegistrationScreen(),
-  ListScreenProducts(),
 ];
 
 class UserRegistrationScreen extends StatefulWidget {
@@ -131,7 +131,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
           );
         },
       );
-      return; // Não prossegue com a requisição
+      return;
     }
 
     User user = User(name: name, email: email, password: password);

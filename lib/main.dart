@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login de Usuário',
+      title: 'Login de Usuárioo',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -104,7 +104,7 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
           );
         },
       );
-      return; // Não prossegue com a requisição
+      return;
     }
 
     try {

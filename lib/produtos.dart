@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'globals.dart' as globals;
+import 'main.dart';
 
 void main() {
   runApp(MyApp());
@@ -241,6 +242,7 @@ class ListScreenProducts extends StatefulWidget {
 class _ListScreenProductsState extends State<ListScreenProducts> {
   List<Products> productsList = [];
   Cart cart = Cart();
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -295,6 +297,33 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
     }
   }
 
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListScreenProducts()),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProductsRegistrationScreen()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginUserScreen()),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -314,38 +343,63 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 1,
+          childAspectRatio: 3 / 2,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
         itemCount: productsList.length,
         itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(productsList[index].productname),
-            subtitle: Text(
-                'Preço: ${productsList[index].price} - Quantidade: ${productsList[index].quantity}'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.add_shopping_cart),
-                  onPressed: () {
-                    setState(() {
-                      cart.addToCart(productsList[index]);
-                    });
+          return GridTile(
+            child: Card(
+              elevation: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(productsList[index].productname,
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('Preço: ${productsList[index].price}'),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Text('Qtd: ${productsList[index].quantity}'),
+                  ),
+                  Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.add_shopping_cart),
+                        onPressed: () {
+                          setState(() {
+                            cart.addToCart(productsList[index]);
+                          });
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Produto adicionado ao carrinho!'),
-                        backgroundColor: Colors.blue,
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Produto adicionado ao carrinho!'),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.delete),
-                  onPressed: () {
-                    deleteProduct(productsList[index].id);
-                  },
-                ),
-              ],
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          deleteProduct(productsList[index].id);
+                        },
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -360,6 +414,25 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
           );
         },
         child: Icon(Icons.add),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.add),
+            label: 'Favoritos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Conta',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }
