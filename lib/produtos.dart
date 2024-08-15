@@ -309,12 +309,6 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
           MaterialPageRoute(builder: (context) => ListScreenProducts()),
         );
         break;
-      case 1:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ProductsRegistrationScreen()),
-        );
-        break;
       case 2:
         Navigator.push(
           context,
@@ -328,7 +322,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista De Produtos'),
+        title: Center(child: Text('Snet Shop')),
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_cart),
@@ -345,8 +339,8 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
       ),
       body: GridView.builder(
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 1,
-          childAspectRatio: 3 / 2,
+          crossAxisCount: 2,
+          childAspectRatio: 4 / 6,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
@@ -358,18 +352,26 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Center(
+                      child: Icon(
+                    Icons.image_rounded,
+                    color: Color.fromARGB(255, 194, 198, 202),
+                    size: 125,
+                  )),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text(productsList[index].productname,
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: Center(
+                      child: Text(
+                        productsList[index].productname,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('Preço: ${productsList[index].price}'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text('Qtd: ${productsList[index].quantity}'),
+                    child: Text(
+                        'Preço: R\$ ${formatPrice(productsList[index].price)},00'),
                   ),
                   Spacer(),
                   Row(
@@ -381,7 +383,6 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                           setState(() {
                             cart.addToCart(productsList[index]);
                           });
-
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Produto adicionado ao carrinho!'),
@@ -422,7 +423,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
             label: 'Início',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.add),
+            icon: Icon(Icons.favorite),
             label: 'Favoritos',
           ),
           BottomNavigationBarItem(
@@ -606,4 +607,13 @@ class _CartScreenState extends State<CartScreen> {
       ),
     );
   }
+}
+
+String formatPrice(String price) {
+  if (price.length > 3) {
+    int value = int.parse(price);
+    return value.toString().replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.');
+  }
+  return price;
 }
