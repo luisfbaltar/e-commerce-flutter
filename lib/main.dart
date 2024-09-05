@@ -52,12 +52,16 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
                 controller: passwordController,
                 decoration: InputDecoration(
                   labelText: 'Senha',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
                 obscureText: true,
               ),

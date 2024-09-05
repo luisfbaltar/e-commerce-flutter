@@ -77,24 +77,32 @@ class _ProductsRegistrationScreenState
                 controller: productnameController,
                 decoration: InputDecoration(
                   labelText: 'Nome do Produto',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
                 controller: priceController,
                 decoration: InputDecoration(
                   labelText: 'Preço Do Produto',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
                 controller: descriptionController,
                 decoration: InputDecoration(
                   labelText: 'Descrição Do Produto',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
                 controller: quantityController,
                 decoration: InputDecoration(
                   labelText: 'Quantidade',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               ElevatedButton(
@@ -369,7 +377,12 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                     child: Center(
                       child: Text(
                         productsList[index].productname,
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromARGB(255, 1, 30, 54),
+                            letterSpacing: 0.5),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -378,12 +391,15 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
                     child: Center(
                       child: Text(
-                          'Preço: R\$ ${formatPrice(productsList[index].price)},00'),
+                        'Preço: R\$ ${formatPrice(
+                          productsList[index].price,
+                        )},00',
+                      ),
                     ),
                   ),
                   Spacer(),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
                         icon: Icon(Icons.add_shopping_cart),
@@ -556,7 +572,7 @@ class _CartScreenState extends State<CartScreen> {
                 return ListTile(
                   title: Text(product.productname),
                   subtitle: Text(
-                      'Preço: ${product.price} - Quantidade: ${product.quantity}'),
+                      'Preço: ${product.price} - Quantidade: ${product.quantity} - Descrição: ${product.description}'),
                   trailing: IconButton(
                     icon: Icon(Icons.remove_shopping_cart),
                     onPressed: () {

@@ -83,12 +83,16 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                 controller: nameController,
                 decoration: InputDecoration(
                   labelText: 'Nome Completo',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
                 controller: emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               TextField(
@@ -96,6 +100,8 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                 obscureText: true,
                 decoration: InputDecoration(
                   labelText: 'Senha',
+                  labelStyle: TextStyle(
+                      fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
                 ),
               ),
               ElevatedButton(
