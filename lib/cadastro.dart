@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'cadastro.dart';
 import 'produtos.dart';
 import 'main.dart';
 
@@ -68,7 +67,11 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro de Usuários'),
+        title: Text(
+          'Cadastro de Usuários',
+          style: TextStyle(
+              fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Center(
         child: Padding(

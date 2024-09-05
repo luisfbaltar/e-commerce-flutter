@@ -322,7 +322,13 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(child: Text('Snet Shop')),
+        title: Center(
+            child: Text('Snet Shop',
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 35,
+                ))),
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_cart),
@@ -348,7 +354,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
         itemBuilder: (BuildContext context, int index) {
           return GridTile(
             child: Card(
-              elevation: 5,
+              elevation: 10,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -370,8 +376,10 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Text(
-                        'Preço: R\$ ${formatPrice(productsList[index].price)},00'),
+                    child: Center(
+                      child: Text(
+                          'Preço: R\$ ${formatPrice(productsList[index].price)},00'),
+                    ),
                   ),
                   Spacer(),
                   Row(

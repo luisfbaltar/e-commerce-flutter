@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'main.dart';
 import 'produtos.dart';
 import 'globals.dart' as globals;
 import 'cadastro.dart';
@@ -31,12 +30,17 @@ class LoginUserScreen extends StatefulWidget {
 class _LoginUserScreenState extends State<LoginUserScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Login de Usuário'),
+        title: Text(
+          'Login de Usuário',
+          style: TextStyle(
+              fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
+        ),
       ),
       body: Center(
         child: Padding(
@@ -79,7 +83,47 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            label: 'Início',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favoritos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Conta',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
+      ),
     );
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ListScreenProducts()),
+        );
+        break;
+      case 2:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginUserScreen()),
+        );
+        break;
+    }
   }
 
   void loginUser(BuildContext context) async {
@@ -172,8 +216,7 @@ class _LoginUserScreenState extends State<LoginUserScreen> {
 
       if (response.statusCode == 200) {
         List<dynamic> usersJson = json.decode(response.body)['usuarios'];
-        List<User> userList =
-            usersJson.map((json) => User.fromJson(json)).toList();
+        usersJson.map((json) => User.fromJson(json)).toList();
 
         Navigator.push(
           context,
