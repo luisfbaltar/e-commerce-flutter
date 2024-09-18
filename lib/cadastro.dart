@@ -81,7 +81,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nome Completo',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -89,7 +89,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               ),
               TextField(
                 controller: emailController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -98,7 +98,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
               TextField(
                 controller: passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Senha',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -108,7 +108,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
                 onPressed: () {
                   registerUser(context);
                 },
-                child: Text('Enviar'),
+                child: const Text('Enviar'),
               ),
             ],
           ),
@@ -127,14 +127,14 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Campos Vazios'),
-            content: Text('Todos os campos são obrigatórios'),
+            title: const Text('Campos Vazios'),
+            content: const Text('Todos os campos são obrigatórios'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -159,7 +159,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
       if (response.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Usuário cadastrado com sucesso!'),
+            content: const Text('Usuário cadastrado com sucesso!'),
             backgroundColor: Colors.blue,
           ),
         );
@@ -170,7 +170,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Falha ao cadastrar usuário'),
+            content: const Text('Falha ao cadastrar usuário'),
             backgroundColor: Colors.blue,
           ),
         );
@@ -182,7 +182,7 @@ class _UserRegistrationScreenState extends State<UserRegistrationScreen> {
     } catch (e) {
       print('Erro ao cadastrar usuário: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Erro ao cadastrar usuário'),
           backgroundColor: Colors.red,
         ),
@@ -216,7 +216,7 @@ class ListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista De Usuario'),
+        title: const Text('Lista De Usuario'),
       ),
       body: ListView.builder(
         itemCount: userList.length,
@@ -225,7 +225,7 @@ class ListScreen extends StatelessWidget {
             title: Text(userList[index].name),
             subtitle: Text(userList[index].email),
             trailing: IconButton(
-              icon: Icon(Icons.edit),
+              icon: const Icon(Icons.edit),
               onPressed: () {
                 editUser(context, userList[index]);
               },
@@ -253,7 +253,7 @@ class EditUserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Usuario'),
+        title: const Text('Editar Usuario'),
       ),
       body: Center(
         child: Column(
@@ -261,20 +261,20 @@ class EditUserScreen extends StatelessWidget {
           children: [
             TextField(
               controller: TextEditingController(text: user.name),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nome Completo',
               ),
             ),
             TextField(
               controller: TextEditingController(text: user.email),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
               ),
             ),
             TextField(
               controller: TextEditingController(text: user.password),
               obscureText: true,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Senha',
               ),
             ),
@@ -282,7 +282,7 @@ class EditUserScreen extends StatelessWidget {
               onPressed: () {
                 updateUser(context);
               },
-              child: Text('Enviar'),
+              child: const Text('Enviar'),
             ),
           ],
         ),

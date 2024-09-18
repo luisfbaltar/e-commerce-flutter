@@ -65,7 +65,7 @@ class _ProductsRegistrationScreenState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cadastro de Produtos'),
+        title: const Text('Cadastro de Produtos'),
       ),
       body: Center(
         child: Padding(
@@ -75,7 +75,7 @@ class _ProductsRegistrationScreenState
             children: [
               TextField(
                 controller: productnameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nome do Produto',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -83,7 +83,7 @@ class _ProductsRegistrationScreenState
               ),
               TextField(
                 controller: priceController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Preço Do Produto',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -91,7 +91,7 @@ class _ProductsRegistrationScreenState
               ),
               TextField(
                 controller: descriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Descrição Do Produto',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -99,7 +99,7 @@ class _ProductsRegistrationScreenState
               ),
               TextField(
                 controller: quantityController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Quantidade',
                   labelStyle: TextStyle(
                       fontWeight: FontWeight.bold, fontStyle: FontStyle.italic),
@@ -109,7 +109,7 @@ class _ProductsRegistrationScreenState
                 onPressed: () {
                   registerProducts(context);
                 },
-                child: Text('Enviar'),
+                child: const Text('Enviar'),
               ),
             ],
           ),
@@ -132,14 +132,14 @@ class _ProductsRegistrationScreenState
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Campos Vazios'),
-            content: Text('Todos os campos são obrigatórios'),
+            title: const Text('Campos Vazios'),
+            content: const Text('Todos os campos são obrigatórios'),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: Text('OK'),
+                child: const Text('OK'),
               ),
             ],
           );
@@ -180,7 +180,7 @@ class _ProductsRegistrationScreenState
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Produto cadastrado com sucesso!'),
             backgroundColor: Colors.blue,
           ),
@@ -193,7 +193,7 @@ class _ProductsRegistrationScreenState
       } else {
         print('Produto não foi cadastrado: ${response.body}');
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Falha ao cadastrar produto'),
             backgroundColor: Colors.red,
           ),
@@ -207,7 +207,7 @@ class _ProductsRegistrationScreenState
     } catch (e) {
       print('Produto não foi cadastrado: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Erro ao cadastrar produto'),
           backgroundColor: Colors.red,
         ),
@@ -292,7 +292,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
           productsList.removeWhere((product) => product.id == id);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Produto deletado!'),
             backgroundColor: Colors.blue,
           ),
@@ -330,7 +330,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
+        title: const Center(
             child: Text('Snet Shop',
                 style: TextStyle(
                   fontStyle: FontStyle.italic,
@@ -339,7 +339,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                 ))),
         actions: [
           IconButton(
-            icon: Icon(Icons.shopping_cart),
+            icon: const Icon(Icons.shopping_cart),
             onPressed: () {
               Navigator.push(
                 context,
@@ -352,7 +352,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
         ],
       ),
       body: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 4 / 6,
           crossAxisSpacing: 10,
@@ -366,7 +366,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Center(
+                  const Center(
                       child: Icon(
                     Icons.image_rounded,
                     color: Color.fromARGB(255, 194, 198, 202),
@@ -377,7 +377,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                     child: Center(
                       child: Text(
                         productsList[index].productname,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontStyle: FontStyle.italic,
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
@@ -397,18 +397,18 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  const Spacer(),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.add_shopping_cart),
+                        icon: const Icon(Icons.add_shopping_cart),
                         onPressed: () {
                           setState(() {
                             cart.addToCart(productsList[index]);
                           });
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
+                            const SnackBar(
                               content: Text('Produto adicionado ao carrinho!'),
                               backgroundColor: Colors.blue,
                             ),
@@ -416,7 +416,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           deleteProduct(productsList[index].id);
                         },
@@ -438,7 +438,7 @@ class _ListScreenProductsState extends State<ListScreenProducts> {
             ),
           );
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -481,7 +481,7 @@ class EditProductsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Editar Produto'),
+        title: const Text('Editar Produto'),
       ),
       body: Center(
         child: Column(
@@ -489,25 +489,25 @@ class EditProductsScreen extends StatelessWidget {
           children: [
             TextField(
               controller: TextEditingController(text: products.productname),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Nome Do Produto',
               ),
             ),
             TextField(
               controller: TextEditingController(text: products.price),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Preço',
               ),
             ),
             TextField(
               controller: TextEditingController(text: products.description),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Descrição',
               ),
             ),
             TextField(
               controller: TextEditingController(text: products.quantity),
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Quantidade',
               ),
             ),
@@ -515,7 +515,7 @@ class EditProductsScreen extends StatelessWidget {
               onPressed: () {
                 updateProducts(context);
               },
-              child: Text('Enviar'),
+              child: const Text('Enviar'),
             ),
           ],
         ),
@@ -560,7 +560,7 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carrinho de compras'),
+        title: const Text('Carrinho de compras'),
       ),
       body: Column(
         children: [
@@ -574,13 +574,13 @@ class _CartScreenState extends State<CartScreen> {
                   subtitle: Text(
                       'Preço: ${product.price} - Quantidade: ${product.quantity} - Descrição: ${product.description}'),
                   trailing: IconButton(
-                    icon: Icon(Icons.remove_shopping_cart),
+                    icon: const Icon(Icons.remove_shopping_cart),
                     onPressed: () {
                       setState(() {
                         widget.cart.removeFromCart(product);
                       });
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('Produto removido'),
                           backgroundColor: Colors.red,
                         ),
@@ -594,7 +594,7 @@ class _CartScreenState extends State<CartScreen> {
           ElevatedButton(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Compra Concluida!'),
                   backgroundColor: Colors.blue,
                 ),
@@ -607,13 +607,13 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               );
             },
-            child: Text('Concluir Compra'),
+            child: const Text('Concluir Compra'),
           ),
           ElevatedButton(
             onPressed: () {
               widget.cart.clearCart();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Compra cancelada com sucesso!'),
                   backgroundColor: Colors.blue,
                 ),
@@ -625,7 +625,7 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               );
             },
-            child: Text('Cancelar Compra'),
+            child: const Text('Cancelar Compra'),
           ),
         ],
       ),
